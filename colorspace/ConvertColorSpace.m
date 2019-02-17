@@ -22,9 +22,9 @@ if strcmp(colorspace, 'opponent')
 elseif strcmp(colorspace, 'rgb')  
     new_image = rgb2normedrgb(input_image); % fill in this function
 elseif strcmp(colorspace, 'hsv')   
-    % use the built-in function
+    new_image = rgb2hsv(input_image);
 elseif strcmp(colorspace, 'ycbcr')
-    % use the built-in function
+    new_image = rgb2ycbcr(input_image);
 elseif strcmp(colorspace, 'gray')
     new_image = rgb2grays(input_image); % fill in this function
 else
