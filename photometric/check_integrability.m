@@ -16,7 +16,12 @@ SE = zeros(size(normals));
 % p measures value of df / dx
 % q measures value of df / dy
 
+a = normals(:,:,1);
+b = normals(:,:,2);
+c = normals(:,:,3);
 
+p = a/c;
+q = b/c;
 % ========================================================================
 
 
@@ -31,6 +36,9 @@ q(isnan(q)) = 0;
 % approximate second derivate by neighbor difference
 % and compute the Squared Errors SE of the 2 second derivatives SE
 
+gp = gradient(p);
+gq = gradient(q);
+SE = (gp-gq).^2;
 
 % ========================================================================
 

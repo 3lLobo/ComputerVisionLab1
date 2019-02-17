@@ -29,16 +29,24 @@ normal = zeros(h, w, 3);
 %   albedo at this point is |g|
 %   normal at this point is g / |g|
 
-for x = 1:w
-    for y = 1:h
+for x = 1:h
+    for y = 1:w
         ii = squeeze(image_stack(x,y,:));
-        g(x,y,:) = linsolve((scriptV), (ii));
+        if norm(ii)==0
+            g(x,y,:)=[0 0 0];
+        else
+            if shadow_trick == false
+                i_shadow = diag(ii);
+                scriptV = i_shadow*scriptV;
+                ii = i_shadow*ii;
+            end
+
+            g(x,y,:) = linsolve((scriptV), (ii));
+        end
         albedo(x,y) = norm(squeeze(g(x,y,:)));
         normal(x,y,:) = g(x,y,:)/albedo(x,y);
     end
 end
-
-% shoud we zero the shadows?
 
 
 

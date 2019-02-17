@@ -50,5 +50,6 @@ image_stack = (double(image_stack) - min_val) / (max_val - min_val);
 normV = sqrt(sum(V.^2, 2));
 scriptV = bsxfun(@rdivide, V, normV);
 
+
 end
 
