@@ -15,7 +15,7 @@ end
 height_map = zeros(h, w);
 
 switch path_type
-    case 'row'
+    case 'column'
         % =================================================================
         % YOUR CODE GOES HERE
         % top left corner of height_map is zero
