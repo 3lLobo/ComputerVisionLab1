@@ -9,7 +9,7 @@ disp('Part 1: Photometric Stereo')
 disp('Loading images...')
 image_dir = './photometrics_images/MonkeyColor/';   % TODO: get the path of the script
 %image_ext = '*.png';
-color_mode = false
+color_mode = true
 
 max_channel = 1;
 if color_mode == true
@@ -35,14 +35,15 @@ disp('Computing surface albedo and normal map...')
 if color_mode == true
     im_count = n/max_channel;
     for cnl = 1:max_channel
-        im_range = (im_count*(cnl-1)):(im_count*cnl);
+        im_range = (1+im_count*(cnl-1)):(im_count*cnl);
         [albedo(:,:,cnl), cnl_normals(:,:,:,cnl)] = estimate_alb_nrm(image_stack(:,:,im_range), scriptV(im_range,:));
     end
-    normals = cnl_normals(:,:,:,1);
-    for n = 2:max_channel
-        normals = normals + cnl_normals(:,:,:,n);
-    end
-    normals = normals./4;
+    %normals = cnl_normals(:,:,:,1);
+    %for n = 2:max_channel
+    %    normals = normals + cnl_normals(:,:,:,n);
+    %end
+    %normals = normals./4;
+    normals=mean(cnl_normals,4);
 else
     [albedo, normals] = estimate_alb_nrm(image_stack, scriptV);
 end

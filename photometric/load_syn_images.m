@@ -26,7 +26,7 @@ for i = 1:nfiles
     % stack at third dimension
     if image_stack == 0
         [h, w] = size(im);
-        fprintf('Image size (HxW): %dx%d\n', h, w);
+        % fprintf('Image size (HxW): %dx%d\n', h, w);
         image_stack = zeros(h, w, nfiles, 'uint8');
         V = zeros(nfiles, 3, 'double');
     end
