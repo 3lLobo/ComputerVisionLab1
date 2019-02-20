@@ -20,8 +20,8 @@ end
 for channel = 1:max_channel
     [image_stack, scriptV] = load_syn_images(image_dir,channel);
     if channel > 1
-        image_stack = cat(3,image_stack,image_stack2);
-        scriptV = cat(1,scriptV, scriptV2);
+        image_stack = cat(3,image_stack2,image_stack);
+        scriptV = cat(1,scriptV2, scriptV);
     end
     image_stack2 = image_stack;
     scriptV2 = scriptV;
