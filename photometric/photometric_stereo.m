@@ -7,7 +7,7 @@ disp('Part 1: Photometric Stereo')
 
 % obtain many images in a fixed view under different illumination
 disp('Loading images...')
-image_dir = './photometrics_images/MonkeyColor/';   % TODO: get the path of the script
+image_dir = './photometrics_images/SphereColor/';   % TODO: get the path of the script
 %image_ext = '*.png';
 color_mode = true
 
@@ -42,8 +42,8 @@ if color_mode == true
     %for n = 2:max_channel
     %    normals = normals + cnl_normals(:,:,:,n);
     %end
-    %normals = normals./4;
-    normals=mean(cnl_normals,4);
+    %normals = normals./3;
+    normals = nanmean(cnl_normals,4);
 else
     [albedo, normals] = estimate_alb_nrm(image_stack, scriptV);
 end
