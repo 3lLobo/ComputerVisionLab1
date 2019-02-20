@@ -28,23 +28,19 @@ normal = zeros(h, w, 3);
 %   solve scriptI * scriptV * g = scriptI * i to obtain g for this point
 %   albedo at this point is |g|
 %   normal at this point is g / |g|
-
+warning('off','MATLAB:rankDeficientMatrix');
 for x = 1:h
     for y = 1:w
-        ii = squeeze(image_stack(x,y,:));
-        if norm(ii)==0
-            g(x,y,:)=[0 0 0];
-        else
-            if shadow_trick == false
-                i_shadow = diag(ii);
-                scriptV = i_shadow*scriptV;
-                ii = i_shadow*ii;
-            end
+        i = squeeze(image_stack(x,y,:));
 
-            g(x,y,:) = linsolve((scriptV), (ii));
+        if shadow_trick == true
+            scripti = diag(i);
+            g = linsolve((scripti*scriptV), (scripti*i));
+        else
+            g = scriptV\i;
         end
-        albedo(x,y) = norm(squeeze(g(x,y,:)));
-        normal(x,y,:) = g(x,y,:)/albedo(x,y);
+        albedo(x,y) = norm(g);
+        normal(x,y,:) = g/albedo(x,y);
     end
 end
 
