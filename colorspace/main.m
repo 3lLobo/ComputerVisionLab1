@@ -6,17 +6,22 @@ close all
 
 I = imread('peppers.png');
 
-visualize(I);
+
 J = ConvertColorSpace(I,'opponent');
- 
+suptitle('Opponent Color Space');
+
 % close all
 J = ConvertColorSpace(I,'rgb');
+suptitle('Normalised RGB Color Space');
 
 % close all
 J = ConvertColorSpace(I,'hsv');
+suptitle('HSV Color Space');
 
 % close all
 J = ConvertColorSpace(I,'ycbcr');
+suptitle('YCbCr Color Space');
 
 % close all
 J = ConvertColorSpace(I,'gray');
+suptitle('Grayscale');

@@ -1,5 +1,6 @@
 function visualize(input_image)
     figure;
+    set(gcf, 'Position',  [100, 100, 1000, 800])
     [X, Y, Z] = size(input_image);
     if (Z == 3)
         subplot(2,2,1), subimage(input_image);
@@ -19,6 +20,7 @@ function visualize(input_image)
         set(gca,'xtick',[],'ytick',[]);
         title('Channel 3');
     else
+        suptitle('Grayscale');
         subplot(2,2,1), subimage(input_image(:, :, 1));
         title('Lightness');
         set(gca,'xtick',[],'ytick',[]);
