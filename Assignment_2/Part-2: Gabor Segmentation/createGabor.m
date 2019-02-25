@@ -58,16 +58,17 @@ sinCarrier = createSin(rot_x, lambda, psi);
 
 % Modulate (multiply) Gaussian envelope with the carriers to compute 
 % the real and imaginary components of the omplex Gabor filter. 
-myGabor_real =      % \\TODO: modulate gaussianEnv with cosCarrier
-myGabor_imaginary = % \\TODO: modulate gaussianEnv with sinCarrier
+% Note: Just see given formulas.
+myGabor_real =  gaussianEnv.*cosCarrier;
+myGabor_imaginary = gaussianEnv.*sinCarrier;
 
 % Pack myGabor_real and myGabor_imaginary into myGabor.
 myGabor(:,:,1) = myGabor_real;
 myGabor(:,:,2) = myGabor_imaginary;
 
-% figure;
-% subplot(121), imshow(myGabor_real,[]);
-% subplot(122), imshow(myGabor_imaginary, []);
+figure;
+subplot(121), imshow(myGabor_real,[]);
+subplot(122), imshow(myGabor_imaginary, []);
 end
 
 
@@ -77,14 +78,14 @@ function rotMat = generateRotationMatrix(theta)
 % ----------------------------------------------------------
 % Returns the rotation matrix. 
 % \\ Hint: https://en.wikipedia.org/wiki/Rotation_matrix \\
-rotMat = % \\TODO: code the rotation matrix given theta.
+rotMat = [cos(theta), -sin(theta); sin(theta), cos(theta)];
 end
 
 % ----------------------------------------------------------
 function cosCarrier = createCos(rot_x, lambda, psi)
 % ----------------------------------------------------------
 % Returns the 2D cosine carrier. 
-cosCarrier = % \\TODO: Implement the cosine given rot_x, lambda and psi.
+cosCarrier = cos(2*pi*rot_x/lambda+psi);
 
 % Reshape the vector representation to matrix.
 cosCarrier = reshape(cosCarrier, sqrt(length(cosCarrier)), []);
@@ -94,7 +95,7 @@ end
 function sinCarrier = createSin(rot_x, lambda, psi)
 % ----------------------------------------------------------
 % Returns the 2D sine carrier. 
-sinCarrier = % \\TODO: Implement the sine given rot_x, lambda and psi.
+sinCarrier = sin(2*pi*rot_x/lambda+psi);
 
 % Reshape the vector representation to matrix.
 sinCarrier = reshape(sinCarrier, sqrt(length(sinCarrier)), []);
@@ -104,7 +105,7 @@ end
 function gaussEnv = createGauss(rot_x, rot_y, gamma, sigma)
 % ----------------------------------------------------------
 % Returns the 2D Gaussian Envelope. 
-gaussEnv = % \\TODO: Implement the Gaussian envelope.
+gaussEnv = exp(-1*(rot_x.^2+gamma^2*rot_y.^2)/(2*sigma^2));
 
 % Reshape the vector representation to matrix.
 gaussEnv = reshape(gaussEnv, sqrt(length(gaussEnv)), []);
