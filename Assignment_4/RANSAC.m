@@ -1,6 +1,5 @@
 function [M, T, inliners] = RANSAC(fa,fb,matches,N,K)
 
-
 subset = K;
 msize = size(matches,2);
 max_in = 0;
@@ -19,8 +18,8 @@ for n = 1:N
     fbvec = fb(:,matches1(2,:));
     
     xa = favec(1,:);
-    xb = favec(2,:);
-    ya = fbvec(1,:);
+    ya = favec(2,:);
+    xb = fbvec(1,:);
     yb = fbvec(2,:);
     
     xall = fa(1,1:uni_max);
