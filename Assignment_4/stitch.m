@@ -1,4 +1,4 @@
-function [stitched_image] = stitch_2(im_left, im_right, N, K)
+function [stitched_image] = stitch(im_left, im_right, N, K, max_scale)
 
 % grey versions of the images
 im_left_gray = rgb2gray(im_left);
@@ -13,11 +13,7 @@ M = [tm(1), tm(2); tm(3), tm(4)];
 T = [tm(5); tm(6)];
 
 % transform image with RANSAC parameters
-im_right_trans = image_transform_ransac(im_right, im_right_gray, M, T);
-
-% correct transfomed image to be stitched to have the same x-size through
-% padding zeros to its end
-[stitched_image, ~] = equal_x_padding(im_right_trans, im_left);
+stitched_image = image_transform_ransac(im_right, im_right_gray, M, T, max_scale);
 
 % Add orginal left image and transformed right image
 [dimx_l,dimy_l,~] = size(im_left);
@@ -27,39 +23,22 @@ for i = 1:1:dimx_l
     end
 end
 
-
 % Remove zero rows
 stitched_image( all(~stitched_image,[2, 3]), : , :) = [];
 % Remove zero columns
 stitched_image( :, all(~stitched_image,[1,3]), :) = [];
 
 stitched_image = uint8(stitched_image);
-
 end
 
-function [im_right_eq, im_left_eq] = equal_x_padding(im_right, im_left)
-    % Bring images to have equal size by adding zero padding to bottom.
-    % (Both images, because we want to cover the case that the right one is
-    % longer.)
-    im_right_eq = image_padding(im_right,size(im_left,1)-size(im_right,1));
-    im_left_eq  = image_padding(im_left,size(im_right,1)-size(im_left,1)); 
-end
-
-function [image] = image_padding(image,x)
-    % Add zero padding to image:
-    % x rows of zeros to the bottom 
-    if x>0
-        pad = zeros(x, size(image,2),size(image,3));
-        image = cat(1,image, pad);
-    end
-end
-
-function [im_trans] = image_transform_ransac(im_color, im_gray, M, T)
+function [im_trans] = image_transform_ransac(im_color, im_gray, M, T, max_scale)
     % Transform image with RANSAC parameters
+    max_x = size(im_color,1)*max_scale;
+    max_y = size(im_color,2)*max_scale;
     [imy, imx] = size(im_gray);
-    im_trans = zeros(500, 500, 3);
-    for x = 1:500
-        for y = 1:500
+    im_trans = zeros(max_x, max_y, 3);
+    for x = 1:max_x
+        for y = 1:max_y
             coord = M * [x; y] + T;
             coord = round(coord);
             newx = round(coord(1));
@@ -76,6 +55,4 @@ function [im_trans] = image_transform_ransac(im_color, im_gray, M, T)
         end
     end
     im_trans = uint8(im_trans);
-    figure;
-    imshow(im_trans);
 end

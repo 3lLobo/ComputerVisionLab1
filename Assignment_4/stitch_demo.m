@@ -7,6 +7,6 @@ K = 10;
 
 %run vlfeat/toolbox/vl_setup
 
-img = stitch(im_left, im_right, N, K);
+img = stitch(im_left, im_right, N, K, 2);
 figure;
 imshow(img);
