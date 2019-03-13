@@ -45,7 +45,6 @@ function [im_trans] = image_transform_ransac(im_color, im_gray, M, T, max_scale)
             newy = round(coord(2));
             
             if all(newy > 0 & newy <= imy & newx > 0 & newx <= imx)
-                color_oc = im_color(newy, newx, 1);
                 im_trans(y, x, 1) = im_color(newy, newx, 1);
                 im_trans(y, x, 2) = im_color(newy, newx, 2); 
                 im_trans(y, x, 3) = im_color(newy, newx, 3); 
