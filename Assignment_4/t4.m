@@ -6,8 +6,8 @@ Im2 = imread('boat2.pgm');
 [imy,imx] = size(Im2);
 [matches, scores, fa, fb] = keypoint_matching(Im1,Im2);
 
-N = 10;
-K = 10;
+N = 700;
+K = 700;
 [M, T, inliners] = RANSAC(fa,fb,matches,N,K);
 
 %create template double the size of the org image
@@ -35,4 +35,3 @@ temp( :, ~any(temp,1) ) = [];  %columns
 
 t4im = uint8(temp);
 imshow(t4im)
-        

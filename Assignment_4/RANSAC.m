@@ -1,8 +1,9 @@
 function [M, T, inliners] = RANSAC(fa,fb,matches,N,K)
 
+
 subset = K;
 msize = size(matches,2);
-max_in = 1000000;
+max_in = 0;
 size_a = size(fa,2);
 size_b = size(fb,2);
 if size_a < size_b
@@ -11,7 +12,6 @@ else
     uni_max = size_b;
 end
 
-
 for n = 1:N
     mpoints = randsample(msize, subset);
     matches1 = matches(:,mpoints);
@@ -19,8 +19,8 @@ for n = 1:N
     fbvec = fb(:,matches1(2,:));
     
     xa = favec(1,:);
-    ya = favec(2,:);
     xb = fbvec(1,:);
+    ya = favec(2,:);
     yb = fbvec(2,:);
     
     xall = fa(1,1:uni_max);
@@ -44,13 +44,13 @@ for n = 1:N
     M1 = x(1:4);
     T1 = x(5:6);
     M1 = reshape(M1,2,2);
+    
     check = M1*[xall;yall]+T1;
-    size(check)
     xbcheck = check(1,:) - xbll;
     ybcheck = check(2,:) - ybll;
-    inliners1 = sqrt(xbcheck.^2 + ybcheck.^2) <= 10;
+    inliners1 = sqrt(xbcheck.^2 - ybcheck.^2) <= 10;
     in_total = sum(inliners1);
-    if in_total < max_in
+    if in_total > max_in
         max_in = in_total;
         inliners = inliners1;
         M = M1;

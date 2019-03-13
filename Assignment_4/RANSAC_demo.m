@@ -6,8 +6,8 @@ Im2 = imread('boat1.pgm');
 [imy,imx] = size(Im1);
 [matches, scores, fa, fb] = keypoint_matching(Im1,Im2);
 
-N = 10;
-P = 10;
+N = 100;
+P = 100;
 [M, positions, inliners] = RANSAC_lucas(fa,fb,matches,N,P);
 
 % Calculating new positions for each points and setting the values in I for
@@ -27,4 +27,5 @@ end
 I( all(~I,2), : ) = [];
 % Remove zero columns
 I( :, all(~I,1) ) = [];
+%I = imgaussfilt(I,0.5);
 imshow(mat2gray(I));
