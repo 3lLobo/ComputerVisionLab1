@@ -8,7 +8,7 @@ im_right_gray = rgb2gray(im_right);
 [matches, ~, fa, fb] = keypoint_matching(im_right_gray, im_left_gray);
 
 % perform RANSAC on keypoints + get parameters
-[tm, ~, ~] = RANSAC_lucas(fa, fb, matches, N, K);
+[tm, ~, ~] = RANSAC(fa, fb, matches, N, K);
 M = [tm(1), tm(2); tm(3), tm(4)];
 T = [tm(5); tm(6)];
 

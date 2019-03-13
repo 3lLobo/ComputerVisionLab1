@@ -1,65 +1,55 @@
-function [M, T, inliners] = RANSAC(fa,fb,matches,N,K)
+function [transformationvector, newpositions, best_result] = RANSAC_lucas(fa, fb, matches, N, P)
 
+    % Collecting all positions
+    xa_full = fa(1, matches(1,:));
+    xb_full = fb(1, matches(2,:));
+    ya_full = fa(2, matches(1,:));
+    yb_full = fb(2, matches(2,:));
+    
+    A_full = locations_to_A_matrix(xa_full, ya_full);
 
-subset = K;
-msize = size(matches,2);
-max_in = 0;
-size_a = size(fa,2);
-size_b = size(fb,2);
-if size_a < size_b
-    uni_max = size_a;
-else
-    uni_max = size_b;
+    % Easy to beat value.
+    best_result = 9999999999999;
+
+    for i=1:N
+        % Creates random indexes in the range of the size of matches
+        random_indices = randperm(size(matches, 2));
+        selected_matches = matches(:, random_indices(1:P));
+
+        % Selecting the corresponding positions in the images
+        xa = fa(1, selected_matches(1,:));
+        xb = fb(1, selected_matches(2,:));
+        ya = fa(2, selected_matches(1,:));
+        yb = fb(2, selected_matches(2,:));
+
+        % Initting the A matrix, 1:n are x positions, n+1:end are y positions
+        A = locations_to_A_matrix(xa, ya);
+        b = locations_to_b_matrix(xb, yb);
+
+        % Calculating x
+        x = pinv(A) * b;
+
+        % Calculating on all positions
+        [x_pred, y_pred] = b_to_locations((A_full * x));
+        distances = [x_pred; y_pred] - [xb_full; yb_full];
+        inliers = sum(sqrt(sum(distances .^2)) >= 10);
+        if inliers < best_result
+            best_result = inliers;
+            transformationvector = x;
+            newpositions = [x_pred; y_pred];
+        end
+
+    end
+
 end
 
-for n = 1:N
-    mpoints = randsample(msize, subset);
-    matches1 = matches(:,mpoints);
-    favec = fa(:,matches1(1,:));
-    fbvec = fb(:,matches1(2,:));
-    
-    xa = favec(1,:);
-    xb = fbvec(1,:);
-    ya = favec(2,:);
-    yb = fbvec(2,:);
-    
-    xall = fa(1,1:uni_max);
-    yall = fa(2,1:uni_max);
-    xbll = fb(1,1:uni_max);
-    ybll = fb(2,1:uni_max);
-    
-    A = zeros(K*2, 6);
-    A(1:K,1) = xa;
-    A(K+1:K*2,3) = xa;
-    A(1:K,2) = ya;
-    A(K+1:K*2,4) = ya;
-    A(1:K,5) = 1;
-    A(K+1:K*2,6) = 1;
-    
-    b = zeros(K*2,1);
-    b(1:K,1) = xb;
-    b(K+1:K*2,1) = yb;
-    
-    x = pinv(A) * b;
-    M1 = x(1:4);
-    T1 = x(5:6);
-    M1 = reshape(M1,2,2);
-    
-    check = M1*[xall;yall]+T1;
-    xbcheck = check(1,:) - xbll;
-    ybcheck = check(2,:) - ybll;
-    inliners1 = sqrt(xbcheck.^2 - ybcheck.^2) <= 10;
-    in_total = sum(inliners1);
-    if in_total > max_in
-        max_in = in_total;
-        inliners = inliners1;
-        M = M1;
-        T = T1;
-    end 
+
+function b = locations_to_b_matrix(x, y)
+
+    [~, n] = size(x);
+    % Initting the b vector, with the supposed to achieve possitions
+    % 1:n are x positions, n+1:end are y positions
+    b = zeros(2*n, 1);
+    b(1:n, 1) = x;
+    b(n+1:end, 1) = y;
 end
-end
-    
-    
-    
-    
-    
