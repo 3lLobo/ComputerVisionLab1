@@ -15,49 +15,34 @@ T = [tm(5); tm(6)];
 % transform image with RANSAC parameters
 im_right_trans = image_transform_ransac(im_right, im_right_gray, M, T);
 
-% correct images to be stitched to have the same size through padding  
-[im_right_eq, im_left_eq] = equal_size_padding(im_right_trans, im_left);
+% correct transfomed image to be stitched to have the same x-size through
+% padding zeros to its end
+[stitched_image, ~] = equal_x_padding(im_right_trans, im_left);
 
-
-% Stitch transformed right image onto left image
-[dimx,dimy,dimz] = size(im_left_eq);
-
-for i = 1:1:dimx
-    for j = 1:1:dimy
-        if im_right_eq(i,j)==0
-            stitched_image(i,j,:) = im_left_eq(i,j,:);
-        else
-            stitched_image(i,j,:) = im_right_eq(i,j,:);
-        end
+% Add orginal left image and transformed right image
+[dimx_l,dimy_l,~] = size(im_left);
+for i = 1:1:dimx_l
+    for j = 1:1:dimy_l
+        stitched_image(i,j,:) = im_left(i,j,:);
     end
 end
 
-% TODO: Add some smoothing here?
-
 end
 
-function [im_right_eq, im_left_eq] = equal_size_padding(im_right, im_left)
-    % Bring images to have equal size by adding zero padding to bottom and
-    % right.
-    r_bot = size(im_left,1)-size(im_right,1);
-    r_right = size(im_left,2)-size(im_right,2);
-    im_right_eq = image_padding(im_right,r_bot,r_right);
-
-    l_bot  = size(im_right,1)-size(im_left,1);
-    l_right = size(im_right,2)-size(im_left,2);
-    im_left_eq = image_padding(im_left,l_bot,l_right); 
+function [im_right_eq, im_left_eq] = equal_x_padding(im_right, im_left)
+    % Bring images to have equal size by adding zero padding to bottom.
+    % (Both images, because we want to cover the case that the right one is
+    % longer.)
+    im_right_eq = image_padding(im_right,size(im_left,1)-size(im_right,1));
+    im_left_eq  = image_padding(im_left,size(im_right,1)-size(im_left,1)); 
 end
 
-function [im_pad] = image_padding(image,x,y)
+function [image] = image_padding(image,x)
     % Add zero padding to image:
-    % x rows and y columns, to the bottom and the right respectively
+    % x rows of zeros to the bottom 
     if x>0
         pad = zeros(x, size(image,2),size(image,3));
-        im_pad = cat(1,image, pad);
-    end
-    if y>0
-        pad = zeros(size(image,1),y,size(image,3));
-        im_pad = cat(2,image, pad);
+        image = cat(1,image, pad);
     end
 end
 
@@ -72,4 +57,3 @@ function [im_trans] = image_transform_ransac(im_color, im_gray, M, T)
         end
     end
 end
-
