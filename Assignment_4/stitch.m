@@ -1,11 +1,11 @@
-function [stitched_image] = stitch(im_left, im_right, N, K)
+function [stitched_image] = stitch_2(im_left, im_right, N, K)
 
 % grey versions of the images
 im_left_gray = rgb2gray(im_left);
 im_right_gray = rgb2gray(im_right);
 
 % perform keypoint matching
-[matches, ~, fa, fb] = keypoint_matching(im_right_gray, im_left_gray);
+[matches, ~, fa, fb] = keypoint_matching(im_left_gray, im_right_gray);
 
 % perform RANSAC on keypoints + get parameters
 [tm, ~, ~] = RANSAC(fa, fb, matches, N, K);
@@ -26,6 +26,14 @@ for i = 1:1:dimx_l
         stitched_image(i,j,:) = im_left(i,j,:);
     end
 end
+
+
+% Remove zero rows
+stitched_image( all(~stitched_image,[2, 3]), : , :) = [];
+% Remove zero columns
+stitched_image( :, all(~stitched_image,[1,3]), :) = [];
+
+stitched_image = uint8(stitched_image);
 
 end
 
@@ -48,12 +56,26 @@ end
 
 function [im_trans] = image_transform_ransac(im_color, im_gray, M, T)
     % Transform image with RANSAC parameters
-    for x = 1:size(im_gray, 2)
-        for y = 1:size(im_gray, 1)
+    [imy, imx] = size(im_gray);
+    im_trans = zeros(500, 500, 3);
+    for x = 1:500
+        for y = 1:500
             coord = M * [x; y] + T;
             coord = round(coord);
-            color_oc = im_color(y, x, :);
-            im_trans(coord(2), coord(1), :) = color_oc; 
+            newx = round(coord(1));
+            newy = round(coord(2));
+            
+            if all(newy > 0 & newy <= imy & newx > 0 & newx <= imx)
+                color_oc = im_color(newy, newx, 1);
+                im_trans(y, x, 1) = im_color(newy, newx, 1);
+                im_trans(y, x, 2) = im_color(newy, newx, 2); 
+                im_trans(y, x, 3) = im_color(newy, newx, 3); 
+            else
+                im_trans(y, x, :) = 0; 
+            end
         end
     end
+    im_trans = uint8(im_trans);
+    figure;
+    imshow(im_trans);
 end
