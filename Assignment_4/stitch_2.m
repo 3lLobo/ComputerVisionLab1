@@ -56,7 +56,6 @@ end
 
 function [im_trans] = image_transform_ransac(im_color, im_gray, M, T)
     % Transform image with RANSAC parameters
-    im_color(1,1,:)
     [imy, imx] = size(im_gray);
     im_trans = zeros(imy*4, imx*4, 3);
     for x = 1:1000
