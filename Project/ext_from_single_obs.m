@@ -7,12 +7,12 @@ function descriptors = ext_from_single_obs(obervation, type, sift_type)
 
     if type=="rgb"
         I_rgb = im2single(im_rgb);
-        descriptors = helperfunction(I_rgb, f_gs, sift_type);  
+        descriptors = get_descriptors(I_rgb, f_gs, sift_type);  
 
     elseif type=="opponent"
         im_opp = make_opponent(im_rgb);
         I_opp = im2single(im_opp);
-        descriptors = helperfunction(I_opp, f_gs, sift_type);
+        descriptors = get_descriptors(I_opp, f_gs, sift_type);
     
     elseif type=="gray"
         descriptors = d_gs;
@@ -27,7 +27,7 @@ function descriptors = ext_from_single_obs(obervation, type, sift_type)
 
 end
 
-function descriptors = helperfunction(I, f_gs, sift_type)
+function descriptors = get_descriptors(I, f_gs, sift_type)
     if sift_type == "dense"
         binSize = 8 ;
         magnif = 3 ;

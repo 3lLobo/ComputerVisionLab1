@@ -1,4 +1,4 @@
-function [cluster_centers, vocab_data_X, dict_data_X, dict_y] = build_visual_vocab(X_train, y_train, class_idx, number_clusters)
+function [cluster_centers, vocab_data_X, dict_data_X, dict_y] = build_visual_vocab(X_train, y_train, class_idx, number_clusters, sift_type)
 
 % get 250 training images from every class to build vocabulary (codebook)
 vocab_build_idx = [];
@@ -15,7 +15,7 @@ dict_data_X = X_train(dict_build_idx, :);
 dict_y = y_train(dict_build_idx, :);
 
 %build visual vocabulary
-vocab_features = extract_features(vocab_data_X, "gray");
+vocab_features = extract_features(vocab_data_X, "gray", sift_type);
 vocab_features_dt = transpose(double(vocab_features));
 [cluster_centers, ~] = vl_kmeans(vocab_features_dt, number_clusters);
 

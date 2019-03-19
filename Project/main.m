@@ -9,6 +9,16 @@ X_train = X;
 y_train = y;
 clear fold_indices
 
+
+%%%%%%
+% in exercise 400, 1000, 40000
+number_clusters = 400;
+
+% sift_type "regular" "dense"
+sift_type = "dense";
+
+%%%%%%
+
 % Filter clases we use
 class_used = {'airplane', 'bird', 'ship', 'horse', 'car'};
 class_idx = 1:10;
@@ -21,10 +31,10 @@ y_train = y_train(class_select, :);
 % in exercise 400, 1000, 40000
 number_clusters = 400;
 % 2.1 and 2.2
-[cluster_centers, vocab_data_X, dict_data_X, dict_y] = build_visual_vocab(X_train, y_train, class_idx, number_clusters);
+[cluster_centers, vocab_data_X, dict_data_X, dict_y] = build_visual_vocab(X_train, y_train, class_idx, number_clusters, sift_type);
 
 % 2.3 and 2.4
-X_hists = create_training_data(dict_data_X, cluster_centers, "gray");
+X_hists = create_training_data(dict_data_X, cluster_centers, "gray", sift_type);
               
 % We can now train the SVM with X_hists as training vectors and dict_y as
 % corresponding labels. 
