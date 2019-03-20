@@ -13,7 +13,9 @@ num_clusters    = 400;      %  400, 1000, 40000
 sift_type       = "dense";  % "regular", "dense"
 img_type        = "gray";   % "gray", "rgb","opponent"
 
+% SVM params 
 svm_num_pos_train_images = 50; % at least 50, max
+kernel_types = [0,1,2,3];
 
 
 % Load training data.
@@ -43,7 +45,8 @@ X_hists =  images_to_histograms(X_train_hist,...
 svms = train_svms(X_hists,...
                   y_train_hist,...
                   svm_num_pos_train_images,...
-                  class_idx);
+                  class_idx,...
+                  kernel_types);
               
 
 
