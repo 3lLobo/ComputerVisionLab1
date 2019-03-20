@@ -1,20 +1,20 @@
-function descriptors = ext_from_single_obs(obervation, type, sift_type)
+function descriptors = ext_from_single_obs(obervation, img_type, sift_type)
 
     im_rgb = reshape(obervation, 96, 96, 3);
     im_gs = rgb2gray(im_rgb);
     I_gs = single(rgb2gray(im_rgb));
     [f_gs, d_gs] = vl_sift(I_gs);
 
-    if type=="rgb"
+    if img_type=="rgb"
         I_rgb = im2single(im_rgb);
         descriptors = get_descriptors(I_rgb, f_gs, sift_type);  
 
-    elseif type=="opponent"
+    elseif img_type=="opponent"
         im_opp = make_opponent(im_rgb);
         I_opp = im2single(im_opp);
         descriptors = get_descriptors(I_opp, f_gs, sift_type);
     
-    elseif type=="gray"
+    elseif img_type=="gray"
         descriptors = d_gs;
 
     else
@@ -22,7 +22,6 @@ function descriptors = ext_from_single_obs(obervation, type, sift_type)
         return
     
     end
-    
     descriptors = transpose(descriptors);
 
 end

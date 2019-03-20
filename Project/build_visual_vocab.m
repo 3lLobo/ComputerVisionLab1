@@ -1,22 +1,16 @@
-function [cluster_centers, vocab_data_X, dict_data_X, dict_y] = build_visual_vocab(X_train, y_train, class_idx, number_clusters, sift_type)
+function [cluster_centers] = build_visual_vocab(images, vocab_size, img_type, sift_type)
+%% Build visual vocubulary of given size from given images.
 
-% get 250 training images from every class to build vocabulary (codebook)
-vocab_build_idx = [];
-dict_build_idx = [];
-for i = class_idx
-    inx_range = 1:size(y_train, 1);
-    idx = y_train == i;
-    class_obs = inx_range(idx);
-    vocab_build_idx = [vocab_build_idx class_obs(1:200)];
-    dict_build_idx = [dict_build_idx class_obs(201:500)];
+% get SIFT descriptors for all images
+vocab_features = [];
+for i = 1:size(images, 1)
+    obervation = images(i, :);
+    descriptors = ext_from_single_obs(obervation, img_type, sift_type);
+    vocab_features = [vocab_features ; descriptors];
 end
-vocab_data_X = X_train(vocab_build_idx, :);
-dict_data_X = X_train(dict_build_idx, :);
-dict_y = y_train(dict_build_idx, :);
-
-%build visual vocabulary
-vocab_features = extract_features(vocab_data_X, "gray", sift_type);
 vocab_features_dt = transpose(double(vocab_features));
-[cluster_centers, ~] = vl_kmeans(vocab_features_dt, number_clusters);
 
+% run kmeans on all discriptors to receive visual words (= cluster
+% centroids)
+[cluster_centers, ~] = vl_kmeans(vocab_features_dt, vocab_size);
 end

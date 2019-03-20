@@ -1,45 +1,41 @@
 clc
 clear all
 close all
+%run vlfeat/toolbox/vl_setup
+%run libsvm-3.23/matlab/make.m
+%addpath("libsvm-3.23/matlab/")
 
-run vlfeat/toolbox/vl_setup
+classes_used = {'airplane', 'bird', 'ship', 'horse', 'car'};
 
-load('stl10_matlab/train.mat');
-X_train = X;
-y_train = y;
-clear fold_indices
+% PARAMS TO TRY OUT:
+num_clusters    = 400;      %  400, 1000, 40000
+sift_type       = "dense";  % "regular", "dense"
+img_type        = "gray";   % "gray", "rgb","opponent"
 
 
-%%%%%%
-% in exercise 400, 1000, 40000
-number_clusters = 400;
+% Load training data.
+[X_train, y_train, class_idx] = load_data(classes_used);
 
-% sift_type "regular" "dense"
-sift_type = "dense";
 
-%%%%%%
+% Divide training data in two parts: One is used for building the visual
+% vocabulary, the other is transformed into histograms of visual words.
+[X_train_vocab, X_train_hist, y_train_hist] = divide_training_data(X_train,y_train,class_idx);
 
-% Filter clases we use
-class_used = {'airplane', 'bird', 'ship', 'horse', 'car'};
-class_idx = 1:10;
-log_idx = ismember(class_names, class_used);
-class_idx = class_idx(log_idx);
-class_select = ismember(y_train, class_idx);
-X_train = X_train(class_select, :);
-y_train = y_train(class_select, :);
 
-% in exercise 400, 1000, 40000
-number_clusters = 400;
-% 2.1 and 2.2
-[cluster_centers, vocab_data_X, dict_data_X, dict_y] = build_visual_vocab(X_train, y_train, class_idx, number_clusters, sift_type);
-
-% 2.3 and 2.4
-X_hists = create_training_data(dict_data_X, cluster_centers, "gray", sift_type);
+% Build visual vocabulary. (Tasks 2.1 and 2.2)
+[cluster_centers] =  build_visual_vocab(X_train_vocab,...  
+                                        num_clusters,...
+                                        img_type,...
+                                        sift_type);
+                              
+% Respresent remaining training data points as collections (=histograms) of
+% visual words from the visual vocabulary. (Tasks 2.3 and 2.4)
+X_hists =  images_to_histograms(X_train_hist,...
+                                cluster_centers,...
+                                img_type,...
+                                sift_type);
               
+
 % We can now train the SVM with X_hists as training vectors and dict_y as
 % corresponding labels. 
-
-% TODO: insert possibility to use dense SIFT in "extract features" and
-% "ext_from_single_obs". Just one additional parameter and one if else in the
-% "ext_from_single_obs" function. Implementation trivial since given at www.vlfeat.org. 
-
+size(X_hists)
