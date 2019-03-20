@@ -1,9 +1,10 @@
 clc
 clear all
 close all
-%run vlfeat/toolbox/vl_setup
-%run libsvm-3.23/matlab/make.m
-%addpath("libsvm-3.23/matlab/")
+
+run vlfeat/toolbox/vl_setup
+run libsvm-3.23/matlab/make.m
+addpath("libsvm-3.23/matlab/")
 
 classes_used = {'airplane', 'bird', 'ship', 'horse', 'car'};
 
@@ -12,6 +13,8 @@ num_clusters    = 400;      %  400, 1000, 40000
 sift_type       = "dense";  % "regular", "dense"
 img_type        = "gray";   % "gray", "rgb","opponent"
 
+svm_num_pos_train_images = 50; % at least 50, max
+
 
 % Load training data.
 [X_train, y_train, class_idx] = load_data(classes_used);
@@ -19,7 +22,7 @@ img_type        = "gray";   % "gray", "rgb","opponent"
 
 % Divide training data in two parts: One is used for building the visual
 % vocabulary, the other is transformed into histograms of visual words.
-[X_train_vocab, X_train_hist, y_train_hist] = divide_training_data(X_train,y_train,class_idx);
+[X_train_vocab, X_train_hist, y_train_hist] = divide_training_data(X_train, y_train, class_idx);
 
 
 % Build visual vocabulary. (Tasks 2.1 and 2.2)
@@ -34,8 +37,18 @@ X_hists =  images_to_histograms(X_train_hist,...
                                 cluster_centers,...
                                 img_type,...
                                 sift_type);
+                     
+                            
+%%%% Train 5 binary SVMs %%%%
+svms = train_svms(X_hists,...
+                  y_train_hist,...
+                  svm_num_pos_train_images,...
+                  class_idx);
               
 
-% We can now train the SVM with X_hists as training vectors and dict_y as
-% corresponding labels. 
-size(X_hists)
+
+% Classify Test Image:
+% - Calculate its histogram with global visual words
+% - get response from every SVM 
+% - assign it to the most probable object class
+
