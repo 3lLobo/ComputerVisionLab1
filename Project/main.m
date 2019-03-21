@@ -3,8 +3,9 @@ clear all
 close all
 
 run vlfeat/toolbox/vl_setup
-run libsvm-3.23/matlab/make.m
-addpath("libsvm-3.23/matlab/")
+
+train_path = 'stl10_matlab/train.mat';
+test_path = 'stl10_matlab/test.mat';
 
 classes_used = {'airplane', 'bird', 'ship', 'horse', 'car'};
 
@@ -15,11 +16,11 @@ img_type        = "gray";   % "gray", "rgb","opponent"
 
 % SVM params 
 svm_num_pos_train_images = 50; % at least 50, max
-kernel_types = [0,1,2,3];
 
 
-% Load training data.
-[X_train, y_train, class_idx] = load_data(classes_used);
+% Load data.
+[X_train, y_train, class_idx] = load_data(train_path,classes_used);
+%[X_test, y_test, ~] = load_data(test_path,classes_used);
 
 
 % Divide training data in two parts: One is used for building the visual
@@ -41,14 +42,14 @@ X_hists =  images_to_histograms(X_train_hist,...
                                 sift_type);
                      
                             
-%%%% Train 5 binary SVMs %%%%
+%Train 5 binary SVMs
 svms = train_svms(X_hists,...
                   y_train_hist,...
                   svm_num_pos_train_images,...
-                  class_idx,...
-                  kernel_types);
-              
+                  class_idx);
 
+
+    
 
 % Classify Test Image:
 % - Calculate its histogram with global visual words

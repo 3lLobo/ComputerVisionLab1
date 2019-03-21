@@ -1,8 +1,8 @@
-function [X_train, y_train, class_idx] = load_data(classes_used)
+function [X_train, y_train, class_idx] = load_data(path, classes_used)
 %% Load datapoints of classes we want to use.
 
 % load data 
-load('stl10_matlab/train.mat');
+load(path);
 X_train = X;
 y_train = y;
 clear fold_indices
