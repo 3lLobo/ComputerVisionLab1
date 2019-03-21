@@ -20,12 +20,13 @@ svm_num_pos_train_images = 50; % at least 50, max
 
 % Load data.
 [X_train, y_train, class_idx] = load_data(train_path,classes_used);
-%[X_test, y_test, ~] = load_data(test_path,classes_used);
+[X_test, y_test, ~] = load_data(test_path,classes_used);
 
 
 % Divide training data in two parts: One is used for building the visual
 % vocabulary, the other is transformed into histograms of visual words.
 [X_train_vocab, X_train_hist, y_train_hist] = divide_training_data(X_train, y_train, class_idx);
+
 
 
 % Build visual vocabulary. (Tasks 2.1 and 2.2)
@@ -42,15 +43,29 @@ X_hists =  images_to_histograms(X_train_hist,...
                                 sift_type);
                      
                             
-%Train 5 binary SVMs
+% Train 5 binary SVMs (Task 2.5)
 svms = train_svms(X_hists,...
                   y_train_hist,...
                   svm_num_pos_train_images,...
                   class_idx);
 
+              
+% Evaluate System (Task 2.6)
+% Calculate histograms for test images with global visual words
+test_hists  =  images_to_histograms(X_test,...
+                                    cluster_centers,...
+                                    img_type,...
+                                    sift_type);
+                               
+% Perform Evaluation
+evaluation(test_hists,...
+           y_test,...
+           svms,...
+           class_idx);
 
-    
 
+                               
+   
 % Classify Test Image:
 % - Calculate its histogram with global visual words
 % - get response from every SVM 
