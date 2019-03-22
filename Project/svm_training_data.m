@@ -1,8 +1,9 @@
-function [svm_X, svm_y] = svm_training_data(X,y,class_idx,class_id,num_pos)
+function [svm_X, svm_y] = svm_training_data(X,y,class_idx,class_id,svm_train_data_ratio)
 %% Create training data for single SVM.
     
     num_classes = size(class_idx,2);
     x_range = 1:size(X,1);
+    num_pos = floor(size(X,1)*svm_train_data_ratio/size(class_idx,2));
 
     svm_X = [];
     % get num_pos positive data samples   

@@ -13,23 +13,28 @@ classes_used = {'airplane', 'bird', 'car', 'horse', 'ship'};
 
 % PARAMS TO TRY OUT:
 num_clusters     =  [400,1000,4000];   
-sift_types       =  ["dense","regular"];
+sift_types       =  ["regular", "dense"];
 img_types        =  ["gray","rgb","opponent"];
 
-% Currently no usage of the following param, we use all images for training.
-num_svm_train_images = 50; % (at least 50) 
 
 vocab_ratio = 0.3333; % percentage of training data used for building visual vocab
+
+% Currently no usage of the following param, we use all images for training.
+% has to be in [50, floor((2500/5)*(1-vocab_ratio))]
+% i.e. in our case it has to be in [50, 333]
+svm_train_data_ratio = 0.5; % max: 1
+
 
 % Logging
 logfile_id = fopen(log_path,'a');
 fprintf(logfile_id, '----------- RESULTS OF CV1 ASSIGNMENT -----------\n\n');
 fprintf(logfile_id,'vocab_ratio: ');
 fprintf(logfile_id, num2str(vocab_ratio));
-%fprintf(logfile_id,'\nnum_svm_train_images: ');
-%fprintf(logfile_id,num2str(num_svm_train_images));
+fprintf(logfile_id,'\nsvm_train_data_ratio: ');
+fprintf(logfile_id,num2str(svm_train_data_ratio));
 
 % Load data.
+disp('Load data.')
 [X_train, y_train, class_idx] = load_data(train_path,classes_used);
 [X_test, y_test, ~] = load_data(test_path,classes_used);
 
@@ -50,16 +55,20 @@ run_path = res_path+run_description;
 fprintf(logfile_id,'\n\n-------');
 fprintf(logfile_id, run_description);
 fprintf(logfile_id,'-------\n');
-
+disp('---------- NEW RUN ----------')
+disp(run_description)
+disp('-----------------------------')
 
 % Divide training data in two parts: One is used for building the visual
 % vocabulary, the other is transformed into histograms of visual words.
+disp('Divide training data.')
 [X_train_vocab, X_train_hist, y_train_hist] = divide_training_data(X_train,...
                                                                    y_train,...
                                                                    class_idx,...
                                                                    vocab_ratio);
 
 % Build visual vocabulary. (Tasks 2.1 and 2.2)
+disp('Build visual vocabulary.')
 [cluster_centers] =  build_visual_vocab(X_train_vocab,...  
                                         num_cluster,...
                                         img_type,...
@@ -67,26 +76,31 @@ fprintf(logfile_id,'-------\n');
                               
 % Respresent remaining training data points as collections (=histograms) of
 % visual words from the isual vocabulary. (Tasks 2.3 and 2.4)
+disp('Build histograms from train images.')
 X_hists =  images_to_histograms(X_train_hist,...
                                 cluster_centers,...
                                 img_type,...
                                 sift_type);                   
                             
 % Train 5 binary SVMs (Task 2.5)
+disp('Training SVMs')
 svms = train_svms(X_hists,...
                   y_train_hist,...
-                  num_svm_train_images,...
+                  svm_train_data_ratio,...
                   class_idx);
 
               
 % Evaluate System (Task 2.6)
 % Calculate histograms for test images with global visual words
+disp('Evaluation:')
+disp('    - Build histograms from test images.')
 test_hists  =  images_to_histograms(X_test,...
                                     cluster_centers,...
                                     img_type,...
                                     sift_type);
                                
 % Perform Evaluation
+disp('    - Perform evaluation.')
 [m_av_prec, av_prec] =  evaluation(X_test,...
                                    test_hists,...
                                    y_test,...
