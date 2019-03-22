@@ -1,12 +1,14 @@
 ----------- RESULTS OF CV1 ASSIGNMENT -----------
 
 vocab_ratio: 0.3333
-svm_num_pos_train_images: 50
+num_svm_train_images: 50
 
 -------gray_dense_400_-------
 
- MAP: 0.42167
-0.46221 0.29519 0.43134 0.4703 0.4493 
+ MAP: 0.51426
+0.51868 0.39747 0.55678 0.56673 0.53164 
 
 [...]
+
+
 

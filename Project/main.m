@@ -9,15 +9,16 @@ test_path = 'stl10_matlab/test.mat';
 res_path = 'res/';
 log_path = 'log.txt';
 
-classes_used = {'airplane', 'bird', 'ship', 'horse', 'car'};
+classes_used = {'airplane', 'bird', 'car', 'horse', 'ship'};
 
 % PARAMS TO TRY OUT:
-num_clusters     =  [10,400,1000,4000];   
+num_clusters     =  [400,1000,4000];   
 sift_types       =  ["dense","regular"];
-img_types        =  ["gray", "rgb","opponent"];
+img_types        =  ["gray","rgb","opponent"];
 
-% SVM params 
-svm_num_pos_train_images = 50; % at least 50, max
+% Currently no usage of the following param, we use all images for training.
+num_svm_train_images = 50; % (at least 50) 
+
 vocab_ratio = 0.3333; % percentage of training data used for building visual vocab
 
 % Logging
@@ -25,14 +26,12 @@ logfile_id = fopen(log_path,'a');
 fprintf(logfile_id, '----------- RESULTS OF CV1 ASSIGNMENT -----------\n\n');
 fprintf(logfile_id,'vocab_ratio: ');
 fprintf(logfile_id, num2str(vocab_ratio));
-fprintf(logfile_id,'\nsvm_num_pos_train_images: ');
-fprintf(logfile_id,num2str(svm_num_pos_train_images));
+%fprintf(logfile_id,'\nnum_svm_train_images: ');
+%fprintf(logfile_id,num2str(num_svm_train_images));
 
 % Load data.
 [X_train, y_train, class_idx] = load_data(train_path,classes_used);
 [X_test, y_test, ~] = load_data(test_path,classes_used);
-
-
 
 %%%%% START FOR LOOPS %%%%%%
 for u=1:size(num_clusters,2)
@@ -43,6 +42,7 @@ for uuu=1:size(img_types,2)
 img_type = img_types(uuu);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%       
 
+% Filename for saving outputs.
 run_description = img_type+"_"+sift_type+"_"+num2str(num_cluster)+"_";
 run_path = res_path+run_description;
 
@@ -50,6 +50,7 @@ run_path = res_path+run_description;
 fprintf(logfile_id,'\n\n-------');
 fprintf(logfile_id, run_description);
 fprintf(logfile_id,'-------\n');
+
 
 % Divide training data in two parts: One is used for building the visual
 % vocabulary, the other is transformed into histograms of visual words.
@@ -74,7 +75,7 @@ X_hists =  images_to_histograms(X_train_hist,...
 % Train 5 binary SVMs (Task 2.5)
 svms = train_svms(X_hists,...
                   y_train_hist,...
-                  svm_num_pos_train_images,...
+                  num_svm_train_images,...
                   class_idx);
 
               
