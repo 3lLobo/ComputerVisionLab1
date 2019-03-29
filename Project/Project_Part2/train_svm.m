@@ -61,16 +61,22 @@ for i = 1:size(data.images.data, 4)
     
     res = vl_simplenn(net, data.images.data(:, :,:, i));
     feat = res(end-3).x; feat = squeeze(feat);
-    
+
     if(data.images.set(i) == 1)
         
-        trainset.features = [trainset.features feat];
-        trainset.labels   = [trainset.labels;  data.images.labels(i)];
+        trainset.features = cat(2, trainset.features, feat);
+        trainset.labels = cat(1, trainset.labels, data.images.labels(i));
+        
+        % trainset.features = [trainset.features feat];
+        % trainset.labels   = [trainset.labels;  data.images.labels(i)];
         
     else
         
-        testset.features = [testset.features feat];
-        testset.labels   = [testset.labels;  data.images.labels(i)];
+        testset.features = cat(2, testset.features, feat);
+        testset.labels = cat(1, testset.labels, data.images.labels(i));
+        
+        % testset.features = [testset.features feat];
+        % testset.labels   = [testset.labels;  data.images.labels(i)];
         
         
     end

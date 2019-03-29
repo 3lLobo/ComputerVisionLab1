@@ -1,4 +1,4 @@
-function net = update_model(varargin)
+function net = update_model(no_epochs, batch_size, varargin)
 opts.networkType = 'simplenn' ;
 opts = vl_argparse(opts, varargin) ;
 
@@ -12,13 +12,16 @@ lr = lr_prev_layers ;
 
 % Meta parameters
 net.meta.inputSize = [32 32 3] ;
-net.meta.trainOpts.learningRate = [ 0.05*ones(1,20) ...
-                                    0.005*ones(1,20)...
-                                    0.0005*ones(1,10)...
+% Divide epochs on learning rate: 2/5 for 0.05 and 0.005, 1/5 for 0.0005
+no_epochs_1_5 = int32(no_epochs*0.2);
+no_epochs_2_5 = int32(no_epochs*0.4);
+net.meta.trainOpts.learningRate = [ 0.05*ones(1,no_epochs_2_5) ...
+                                    0.05*ones(1, no_epochs_2_5)...
+                                    0.05*ones(1, no_epochs_1_5)...
                                     ] ;
 net.meta.trainOpts.weightDecay = 0.0001 ;
-net.meta.trainOpts.batchSize = 100 ;
-net.meta.trainOpts.numEpochs = numel(net.meta.trainOpts.learningRate) ;
+net.meta.trainOpts.batchSize = batch_size ;
+net.meta.trainOpts.numEpochs = numel(net.meta.trainOpts.learningRate);
 
 %% Define network 
 net.layers = {} ;
@@ -73,14 +76,16 @@ net.layers{end+1} = struct('type', 'relu') ;
 %% TODO: Define the structure here, so that the network outputs 5-class rather than 10 (as in the pretrained network)
 % Block 5
 
-% NEW_INPUT_SIZE  = X
-% NEW_OUTPUT_SIZE = Y
+NEW_INPUT_SIZE  = 64;
+NEW_OUTPUT_SIZE = 5;
 
 net.layers{end+1} = struct('type', 'conv', ...
                            'weights', {{0.05*randn(1,1,NEW_INPUT_SIZE,NEW_OUTPUT_SIZE, 'single'), zeros(1,NEW_OUTPUT_SIZE,'single')}}, ...
                            'learningRate', .1*lr_new_layers, ...
                            'stride', 1, ...
                            'pad', 0) ;
+                       
+
 
 %%  Define loss                     
 % Loss layer

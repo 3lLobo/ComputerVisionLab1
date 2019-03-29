@@ -1,0 +1,51 @@
+%% main function 
+
+
+%% fine-tune cnn
+epoch = 40;
+b_size = 50;
+id = "_e_" + epoch + "_b_" +b_size;
+[net, info, expdir] = finetune_cnn(epoch, b_size, id);
+
+%% extract features and train svm
+
+% TODO: Replace the name with the name of your fine-tuned model
+nets.fine_tuned = load(fullfile(expdir, 'net-epoch-50.mat')); 
+nets.fine_tuned = nets.fine_tuned.net;
+
+nets.pre_trained = load(fullfile('data', 'pre_trained_model.mat')); 
+nets.pre_trained = nets.pre_trained.net; 
+
+data = load(fullfile(expdir, 'imdb-stl.mat'));
+
+visualize = false;
+
+%% Visualize with tsne
+
+if visualize
+    nets.pre_trained.layers{end}.type = 'softmax';
+    nets.fine_tuned.layers{end}.type = 'softmax';
+    feature_data_pre = extract_features(data, nets.pre_trained);
+    feature_data_fine = extract_features(data, nets.fine_tuned);
+
+    feature_data = load('data/features_pretrained.mat');
+    feature_data = feature_data.feature_data;
+    
+    feature_data_pre = load(fullfile(expdir, 'net-epoch-50.mat')); 
+    
+    expdir
+    
+    save('data/features_pretrained.mat', 'feature_data');
+
+    disp("DONE WITH FEATURES")
+
+    [Y, loss] = tsne(feature_data.features, 'Standardize', true);
+    save('data/tsne_pretrained.mat', 'Y');
+    Y = load('data/tsne_pretrained.mat');
+    figure
+    Y = Y.Y;
+    gscatter(Y(:,1), Y(:,2), feature_data.labels)
+end
+
+%%
+train_svm(nets, data);
