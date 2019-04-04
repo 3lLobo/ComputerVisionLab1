@@ -12,9 +12,9 @@ log_path = 'log.txt';
 classes_used = {'airplane', 'bird', 'car', 'horse', 'ship'};
 
 % PARAMS TO TRY OUT:
-num_clusters     =  [400,1000,4000];   
+num_clusters     =  [400,1000,2000,4000];   
 sift_types       =  ["regular", "dense"];
-img_types        =  ["gray","rgb","opponent"];
+img_types        =  ["gray", "rgb", "opponent"]; 
 
 
 vocab_ratio = 0.3333; % percentage of training data used for building visual vocab
@@ -101,12 +101,12 @@ test_hists  =  images_to_histograms(X_test,...
                                
 % Perform Evaluation
 disp('    - Perform evaluation.')
-[m_av_prec, av_prec] =  evaluation(X_test,...
-                                   test_hists,...
-                                   y_test,...
-                                   svms,...
-                                   class_idx,...
-                                   run_path);
+[m_av_prec, av_prec, m_acc, acc] =  evaluation(X_test,...
+                                               test_hists,...
+                                               y_test,...
+                                               svms,...
+                                               class_idx,...
+                                               run_path);
 
  % Log results                             
  fprintf(logfile_id,"\n MAP: ");
@@ -114,6 +114,15 @@ disp('    - Perform evaluation.')
  fprintf(logfile_id,"\n");
  for i=1:size(classes_used,2)
     fprintf(logfile_id,  num2str(av_prec(i)));
+    fprintf(logfile_id, " ");
+ end
+ 
+ fprintf(logfile_id,"\n");
+  fprintf(logfile_id,"\n ACC: ");
+ fprintf(logfile_id,num2str(m_acc));
+ fprintf(logfile_id,"\n");
+ for i=1:size(classes_used,2)
+    fprintf(logfile_id,  num2str(acc(i)));
     fprintf(logfile_id, " ");
  end
  fprintf(logfile_id,"\n");

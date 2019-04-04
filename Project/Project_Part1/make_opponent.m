@@ -1,5 +1,5 @@
 function [oppo] = make_opponent(image)
-
+%% Create opponent color image for given RGB image.
 width = size(image,1);
 
 r = image(:,:,1);
