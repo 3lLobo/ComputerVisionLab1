@@ -10,7 +10,10 @@ for e_idx = 1:size(epochs, 1)
         b_size = batch_sizes(b_idx);
         id = "_e_" + epoch + "_b_" +b_size;
         [net, info, expdir] = finetune_cnn(epoch, b_size, id);
- 
+        save(fullfile(expdir, 'train_info.mat'), 'info');
+        clear net
+        clear info
+        clear expdir
     end
 end
 

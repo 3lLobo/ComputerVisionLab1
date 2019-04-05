@@ -2,7 +2,6 @@ function net = update_model(no_epochs, batch_size, varargin)
 opts.networkType = 'simplenn' ;
 opts = vl_argparse(opts, varargin) ;
 
-
 %% TODO: PLAY WITH THESE PARAMETERTS TO GET A BETTER ACCURACY
 
 lr_prev_layers = [.2, 2];
@@ -11,14 +10,20 @@ lr_new_layers  = [1, 4];
 lr = lr_prev_layers ;
 
 % Meta parameters
-net.meta.inputSize = [32 32 3] ;
+net.meta.inputSize = [32 32 3];
+
 % Divide epochs on learning rate: 2/5 for 0.05 and 0.005, 1/5 for 0.0005
-no_epochs_1_5 = int32(no_epochs*0.2);
-no_epochs_2_5 = int32(no_epochs*0.4);
-net.meta.trainOpts.learningRate = [ 0.05*ones(1,no_epochs_2_5) ...
-                                    0.05*ones(1, no_epochs_2_5)...
-                                    0.05*ones(1, no_epochs_1_5)...
-                                    ] ;
+no_epochs_40 = int32(no_epochs*0.4);
+no_epochs_30 = int32(no_epochs*0.3);
+no_epochs_25 = int32(no_epochs*0.25);
+no_epochs_20 = int32(no_epochs*0.2);
+no_epochs_10 = int32(no_epochs*0.1);
+net.meta.trainOpts.learningRate = [ 0.05*ones(1, no_epochs_30) ...
+                                    0.005*ones(1,no_epochs_25)...
+                                    0.0005*ones(1, no_epochs_25)...
+                                    0.0001*ones(1, no_epochs_20)...
+                                    ];
+                                
 net.meta.trainOpts.weightDecay = 0.0001 ;
 net.meta.trainOpts.batchSize = batch_size ;
 net.meta.trainOpts.numEpochs = numel(net.meta.trainOpts.learningRate);
@@ -85,7 +90,6 @@ net.layers{end+1} = struct('type', 'conv', ...
                            'stride', 1, ...
                            'pad', 0) ;
                        
-
 
 %%  Define loss                     
 % Loss layer

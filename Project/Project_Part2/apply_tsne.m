@@ -35,7 +35,9 @@ tsne_Y_ft = tsne_Y_ft.tsne_Y_ft;
 figure;
 subplot(1,2,1)
 gscatter(tsne_Y_pt(:,1), tsne_Y_pt(:,2), feature_data_pretrained.labels)
+legend('airplane', 'bird', 'ship', 'horse', 'car');
 subplot(1,2,2)
 gscatter(tsne_Y_ft(:,1), tsne_Y_ft(:,2), feature_data_finetuned.labels)
- 
+legend('airplane', 'bird', 'ship', 'horse', 'car');
+
  end
